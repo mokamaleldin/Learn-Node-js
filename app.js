@@ -1,15 +1,20 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path');
 
 const app = express();
 
-app.use((req, res, next) => {
-    console.log('In the middleware!');
-    next();
-})
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
+
+// 404 Page Not Found handler
 app.use((req, res, next) => {
-    console.log('In another middleware!');
-    res.send("<h1>Hello from Express!</h1>");
-})
+    res.sendFile(path.join(__dirname, 'views', '404.html'));
+});
 
 app.listen(3000);
