@@ -1,3 +1,4 @@
+//make a new user 
 import { Router } from 'express';
 import User from '../models/User';
 import bcrypt from 'bcrypt';

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import signupRoute from './routes/signup';
 import loginRoute from './routes/login';
+import resetPasswordRoute from './routes/resetPassword';
 import session from 'express-session';
 
 dotenv.config();
@@ -19,12 +20,18 @@ app.use(session({
 }));
 
 
+
 app.use('/signup', signupRoute);
 app.use('/login', loginRoute);
+app.use('/reset-password', resetPasswordRoute);
+
+
 
 const MONGO_URI = process.env.MONGO_URI || '';
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('Connected to MongoDB'))
+    .then(() => {
+        console.log('Connected to MongoDB');
+    })
     .catch((err) => console.error('MongoDB connection error:', err));
 
 app.get('/', (req, res) => {

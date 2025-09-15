@@ -1,3 +1,4 @@
+import 'express-session';
 import { Router } from 'express';
 import User from '../models/User';
 import bcrypt from 'bcrypt';
@@ -19,7 +20,8 @@ router.post('/', async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password.' });
         }
         req.session.userId = String(user._id);
-        return res.status(200).json({ message: 'Login successful.' });
+        req.session.role = user.role;
+        return res.status(200).json({ message: 'Login successful.', role: user.role });
     } catch (err) {
         return res.status(500).json({ message: 'Server error.' });
     }
