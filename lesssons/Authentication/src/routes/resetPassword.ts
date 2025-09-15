@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 
 const router = Router();
 
-// Reset password route
 router.post('/', async (req, res) => {
     const { email, newPassword } = req.body;
     if (!email || !newPassword) {
