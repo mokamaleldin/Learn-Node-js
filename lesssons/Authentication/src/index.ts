@@ -19,7 +19,7 @@ app.use(express.json()); // Middleware to parse JSON bodies
 
 
 app.use(session({
-    secret: 'your_secret_key', 
+    secret: process.env.YOUR_SECRET_KEY || '', 
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true }
