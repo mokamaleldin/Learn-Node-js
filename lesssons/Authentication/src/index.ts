@@ -6,6 +6,7 @@ import session from 'express-session';
 import signupRoute from './routes/signup';
 import loginRoute from './routes/login';
 import resetPasswordRoute from './routes/resetPassword';
+import logoutRoute from './routes/logout';
 import passport from 'passport';
 import { adminOnly } from './middleware/authorize';
 
@@ -32,6 +33,7 @@ app.use(passport.session());
 app.use('/signup', signupRoute);
 app.use('/login', loginRoute);
 app.use('/reset-password', resetPasswordRoute);
+app.use('/logout', logoutRoute);
 
 // Connect to MongoDB
 const MONGO_URI = process.env.MONGO_URI || '';
