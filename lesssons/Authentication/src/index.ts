@@ -7,6 +7,7 @@ import signupRoute from './routes/signup';
 import loginRoute from './routes/login';
 import resetPasswordRoute from './routes/resetPassword';
 import logoutRoute from './routes/logout';
+import propertiesRoute from './routes/properties';
 import passport from 'passport';
 import { adminOnly } from './middleware/authorize';
 
@@ -34,6 +35,7 @@ app.use('/signup', signupRoute);
 app.use('/login', loginRoute);
 app.use('/reset-password', resetPasswordRoute);
 app.use('/logout', logoutRoute);
+app.use('/properties', propertiesRoute);
 
 // Connect to MongoDB
 const MONGO_URI = process.env.MONGO_URI || '';
@@ -42,7 +44,6 @@ mongoose.connect(MONGO_URI)
         console.log('Connected to MongoDB');
     })
     .catch((err) => console.error('MongoDB connection error:', err));
-
 
 
 app.get('/', (req, res) => {
