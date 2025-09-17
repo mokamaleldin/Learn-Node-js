@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import Property from '../models/Property';
 import { adminOnly } from '../middleware/authorize';
+import { upload, cloudinary } from '../config/cloudinary';
 
 const router = Router();
 
+// Get all approved properties (only approved are public)
 router.get('/', async (req, res) => {
     // property.find = SELECT * FROM properties;
     const properties = await Property.find({ isApprove: true });
@@ -17,8 +19,8 @@ router.get('/all', adminOnly, async (req, res) => {
     res.json(properties);
 });
 
-// Create new property 
-router.post('/ ', async (req, res) => {
+// Create new property with images 
+router.post('/', upload.array('images', 7), async (req, res) => {
     if (!req.session || !req.session.userId) {
         return res.status(401).json({ message: 'Please log in to create a property.' });
     }
@@ -26,16 +28,29 @@ router.post('/ ', async (req, res) => {
         const propertyData = req.body;
         propertyData.user = req.session.userId;
         propertyData.isApprove = false;
+
+        // Get uploaded image URLs from Cloudinary
+        const files = req.files as Express.Multer.File[];
+        if (files && files.length > 0) {
+            propertyData.property_images = files.map(file => file.path);
+        } else {
+            propertyData.property_images = []; // Initialize empty array if no images
+        }
+
         const property = await Property.create(propertyData);
-        res.status(201).json(property);
+        res.status(201).json({
+            message: 'Property created successfully!',
+            property: property,
+            imageCount: property.property_images?.length || 0
+        });
     } catch (err) {
+        console.error('Property creation error:', err);
         res.status(500).json({ message: 'Failed to create property.' });
     }
 });
 
-
 // Edit a property by ID
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.array('images', 7), async (req, res) => {
     if (!req.session || !req.session.userId) {
         return res.status(401).json({ message: 'Please log in to edit a property.' });
     }
@@ -48,10 +63,39 @@ router.put('/:id', async (req, res) => {
         if (String(property.user) !== String(req.session.userId) && req.session.role !== 'admin') {
             return res.status(403).json({ message: 'Not authorized to edit this property.' });
         }
-        Object.assign(property, req.body);
+
+        // Handle new images if uploaded
+        const files = req.files as Express.Multer.File[];
+        if (files && files.length > 0) {
+            // Check total image limit (current + new images)
+            const currentImageCount = property.property_images?.length || 0;
+            if (currentImageCount + files.length > 7) {
+                return res.status(400).json({
+                    message: `Cannot add ${files.length} images. Maximum 7 images per property. Current: ${currentImageCount}`
+                });
+            }
+
+            // Add new image URLs
+            const newImageUrls = files.map(file => file.path);
+            if (!property.property_images) {
+                property.property_images = [];
+            }
+            property.property_images.push(...newImageUrls);
+        }
+
+        // Update property data (excluding images which are handled above)
+        const { images, ...updateData } = req.body;
+        Object.assign(property, updateData);
+        property.updated_at = new Date();
+
         await property.save();
-        res.json(property);
+        res.json({
+            message: 'Property updated successfully!',
+            property: property,
+            imageCount: property.property_images?.length || 0
+        });
     } catch (err) {
+        console.error('Property update error:', err);
         res.status(500).json({ message: 'Failed to edit property.' });
     }
 });
@@ -69,6 +113,22 @@ router.delete('/:id', async (req, res) => {
         if (String(property.user) !== String(req.session.userId) && req.session.role !== 'admin') {
             return res.status(403).json({ message: 'Not authorized to delete this property.' });
         }
+
+        // Delete images from Cloudinary before deleting the property
+        if (property.property_images && property.property_images.length > 0) {
+            for (const imageUrl of property.property_images) {
+                try {
+                    // Extract public_id from Cloudinary URL
+                    const publicId = imageUrl.split('/').pop()?.split('.')[0];
+                    if (publicId) {
+                        await cloudinary.uploader.destroy(`properties/${publicId}`);
+                    }
+                } catch (error) {
+                    console.error('Error deleting image from Cloudinary:', error);
+                }
+            }
+        }
+
         await property.deleteOne();
         res.json({ message: 'Property deleted.' });
     } catch (err) {

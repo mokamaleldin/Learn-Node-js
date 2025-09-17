@@ -3,10 +3,10 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import session from 'express-session';
 
-import signupRoute from './routes/signup';
-import loginRoute from './routes/login';
-import resetPasswordRoute from './routes/resetPassword';
-import logoutRoute from './routes/logout';
+import signupRoute from './routes/auth/signup';
+import loginRoute from './routes/auth/login';
+import resetPasswordRoute from './routes/auth/resetPassword';
+import logoutRoute from './routes/auth/logout';
 import propertiesRoute from './routes/properties';
 import passport from 'passport';
 import { adminOnly } from './middleware/authorize';
@@ -50,10 +50,6 @@ app.get('/', (req, res) => {
     res.send('Server is running!');
 });
 
-// Example admin-only route
-app.get('/admin-data', adminOnly, (req, res) => {
-    res.json({ secret: 'This is admin-only data.' });
-});
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
