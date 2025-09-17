@@ -11,7 +11,6 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ message: 'All fields are required.' });
     }
     try {
-        //await يخلي البرنامج "ينتظر" النتيجة قبل يكمل باقي الأسطر. 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(409).json({ message: 'Email already in use.' });
