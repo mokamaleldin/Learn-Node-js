@@ -1,7 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
-import { Request } from 'express';
 
 // Configure Cloudinary
 cloudinary.config({
@@ -27,10 +26,10 @@ const storage = new CloudinaryStorage({
 export const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB limit per file
-        files: 7, // Maximum 7 files
+        fileSize: 5 * 1024 * 1024,
+        files: 7,
     },
-    fileFilter: (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    fileFilter: (req, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
         // Check file type
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);

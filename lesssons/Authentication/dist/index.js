@@ -7,13 +7,12 @@ const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_session_1 = __importDefault(require("express-session"));
-const signup_1 = __importDefault(require("./routes/signup"));
-const login_1 = __importDefault(require("./routes/login"));
-const resetPassword_1 = __importDefault(require("./routes/resetPassword"));
-const logout_1 = __importDefault(require("./routes/logout"));
+const signup_1 = __importDefault(require("./routes/auth/signup"));
+const login_1 = __importDefault(require("./routes/auth/login"));
+const resetPassword_1 = __importDefault(require("./routes/auth/resetPassword"));
+const logout_1 = __importDefault(require("./routes/auth/logout"));
 const properties_1 = __importDefault(require("./routes/properties"));
 const passport_1 = __importDefault(require("passport"));
-const authorize_1 = require("./middleware/authorize");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
@@ -40,10 +39,6 @@ mongoose_1.default.connect(MONGO_URI)
     .catch((err) => console.error('MongoDB connection error:', err));
 app.get('/', (req, res) => {
     res.send('Server is running!');
-});
-// Example admin-only route
-app.get('/admin-data', authorize_1.adminOnly, (req, res) => {
-    res.json({ secret: 'This is admin-only data.' });
 });
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);

@@ -32,9 +32,9 @@ router.post('/', upload.array('images', 7), async (req, res) => {
         // Get uploaded image URLs from Cloudinary
         const files = req.files as Express.Multer.File[];
         if (files && files.length > 0) {
-            propertyData.property_images = files.map(file => file.path);
+            propertyData.property_images = files.map(file => file.path); propertyData.property_images = files.map(file => file.path);
         } else {
-            propertyData.property_images = []; // Initialize empty array if no images
+            propertyData.property_images = []; 
         }
 
         const property = await Property.create(propertyData);
@@ -67,15 +67,12 @@ router.put('/:id', upload.array('images', 7), async (req, res) => {
         // Handle new images if uploaded
         const files = req.files as Express.Multer.File[];
         if (files && files.length > 0) {
-            // Check total image limit (current + new images)
             const currentImageCount = property.property_images?.length || 0;
             if (currentImageCount + files.length > 7) {
                 return res.status(400).json({
                     message: `Cannot add ${files.length} images. Maximum 7 images per property. Current: ${currentImageCount}`
                 });
             }
-
-            // Add new image URLs
             const newImageUrls = files.map(file => file.path);
             if (!property.property_images) {
                 property.property_images = [];
@@ -83,7 +80,6 @@ router.put('/:id', upload.array('images', 7), async (req, res) => {
             property.property_images.push(...newImageUrls);
         }
 
-        // Update property data (excluding images which are handled above)
         const { images, ...updateData } = req.body;
         Object.assign(property, updateData);
         property.updated_at = new Date();
@@ -118,7 +114,6 @@ router.delete('/:id', async (req, res) => {
         if (property.property_images && property.property_images.length > 0) {
             for (const imageUrl of property.property_images) {
                 try {
-                    // Extract public_id from Cloudinary URL
                     const publicId = imageUrl.split('/').pop()?.split('.')[0];
                     if (publicId) {
                         await cloudinary.uploader.destroy(`properties/${publicId}`);
