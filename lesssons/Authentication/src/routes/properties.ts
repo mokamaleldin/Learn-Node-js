@@ -49,7 +49,7 @@ router.post('/', upload.array('images', 7), async (req, res) => {
     }
 });
 
-// Edit a property by ID
+// Edit a property by ID ***
 router.put('/:id', upload.array('images', 7), async (req, res) => {
     if (!req.session || !req.session.userId) {
         return res.status(401).json({ message: 'Please log in to edit a property.' });
@@ -96,7 +96,7 @@ router.put('/:id', upload.array('images', 7), async (req, res) => {
     }
 });
 
-// Delete a property by ID
+// Delete a property by ID ***
 router.delete('/:id', async (req, res) => {
     if (!req.session || !req.session.userId) {
         return res.status(401).json({ message: 'Please log in to delete a property.' });
