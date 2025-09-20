@@ -1,14 +1,11 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-//this is the type
-
 export interface IUser extends Document {
     name: string;
     email: string;
     password: string;
     role: 'admin' | 'user';
 }
-
 
 const UserSchema: Schema = new Schema({
     name: { type: String, required: true },

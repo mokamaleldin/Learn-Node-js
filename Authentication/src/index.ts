@@ -16,7 +16,6 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json()); // Middleware to parse JSON bodies
 
 
-
 app.use(session({
     secret: process.env.YOUR_SECRET_KEY || '', 
     resave: false,
@@ -40,8 +39,7 @@ mongoose.connect(MONGO_URI)
     })
     .catch((err) => console.error('MongoDB connection error:', err));
 
-
-
+    
 app.get('/', (req, res) => {
     res.send('Server is running!');
 });
