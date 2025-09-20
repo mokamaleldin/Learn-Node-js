@@ -9,8 +9,6 @@ import resetPasswordRoute from './routes/resetPassword';
 import passport from 'passport';
 import { adminOnly } from './middleware/authorize';
 
-
-
 dotenv.config();
 
 const app = express();
