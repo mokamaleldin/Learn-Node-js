@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 
 const router = Router();
 
+
 router.post('/', async (req, res) => {
     const { email, newPassword } = req.body;
     if (!email || !newPassword) {
